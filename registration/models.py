@@ -252,7 +252,7 @@ class RegistrationProfile(models.Model):
                 (self.user.date_joined + expiration_date <= datetime_now()))
     activation_key_expired.boolean = True
 
-    def send_activation_email(self, site, request=None):
+    def send_activation_email(self, site, request=None, use_html=False):
         """
         Send an activation email to the user associated with this
         ``RegistrationProfile``.
@@ -321,12 +321,8 @@ class RegistrationProfile(models.Model):
         message_txt = render_to_string('registration/activation_email.txt', ctx_dict)
         email_message = EmailMultiAlternatives(subject, message_txt, settings.DEFAULT_FROM_EMAIL, [self.user.email])
 
-        try:
+        if use_html:
             message_html = render_to_string('registration/activation_email.html', ctx_dict)
-        except TemplateDoesNotExist:
-            message_html = None
-
-        if message_html:
             email_message.attach_alternative(message_html, 'text/html')
 
         email_message.send()
