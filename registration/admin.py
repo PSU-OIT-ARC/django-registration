@@ -4,13 +4,14 @@ from django.contrib.sites.models import Site
 from django.utils.translation import ugettext_lazy as _
 
 from registration.models import RegistrationProfile
+from registration.users import UserModel
 
 
 class RegistrationAdmin(admin.ModelAdmin):
     actions = ['activate_users', 'resend_activation_email']
     list_display = ('user', 'activation_key_expired')
     raw_id_fields = ['user']
-    search_fields = ('user__username', 'user__first_name', 'user__last_name')
+    search_fields = ('user__%s' % (UserModel().USERNAME_FIELD),)
 
     def activate_users(self, request, queryset):
         """
